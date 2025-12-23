@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Nedood</title>
+    <style>
+        /* إعدادات الصفحة الأساسية */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
+            color: #fff;
+            position: relative;
+            /* مهم عشان العناصر اللي في الخلفية */
+        }
+
+        /* --- ستايل القلوب الهابطة في الخلفية (الجديد) --- */
+        .falling-heart-bg {
+            position: absolute;
+            top: -50px;
+            /* تبدأ من فوق الشاشة */
+            z-index: -1;
+            /* عشان تكون خلف كل العناصر */
+            opacity: 0.2;
+            /* شفافة جداً عشان تكون "شبه مختفية" */
+            filter: blur(1px);
+            /* ضبابية خفيفة لإعطاء عمق */
+            animation: fallDown linear infinite;
+            /* حركة النزول */
+        }
+
+        /* رسمة القلب المفرغ بالنيون */
+        .falling-heart-bg svg path {
+            fill: none;
+            /* مفرغ من الداخل */
+            stroke: #ff66b2;
+            /* لون الإطار الوردي */
+            stroke-width: 3;
+            /* سمك الإطار */
+            /* تأثير توهج النيون للإطار */
+            filter: drop-shadow(0 0 5px #ff66b2) drop-shadow(0 0 10px #ff0080);
+        }
+
+        /* حركة النزول من فوق لتحت */
+        @keyframes fallDown {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+                /* تنزل لحد تحت الشاشة وتلف */
+            }
+        }
+
+        /* -------------------------------------------------- */
+
+
+        #start-screen {
+            text-align: center;
+            transition: opacity 0.5s ease;
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            /* عشان يكون فوق الخلفية */
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: #ff66b2;
+            text-shadow: 0 0 10px #ff66b2, 0 0 20px #ff0080;
+            margin-bottom: 50px;
+        }
+
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .neon-btn {
+            background: transparent;
+            border: 2px solid #ff66b2;
+            color: #ff66b2;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            border-radius: 5px;
+            box-shadow: 0 0 10px #ff66b2 inset, 0 0 20px #ff66b2;
+            text-shadow: 0 0 5px #ff66b2;
+            transition: 0.3s;
+            font-family: inherit;
+            position: relative;
+        }
+
+        .neon-btn:hover {
+            background-color: #ff66b2;
+            color: #000;
+            box-shadow: 0 0 20px #ff66b2 inset, 0 0 40px #ff66b2;
+        }
+
+        #no-btn {
+            border-color: #fff;
+            color: #fff;
+            box-shadow: 0 0 10px #fff inset, 0 0 20px #fff;
+        }
+
+        #no-btn:hover {
+            background-color: #fff;
+            box-shadow: 0 0 20px #fff inset, 0 0 40px #fff;
+        }
+
+        #final-screen {
+            display: none;
+            text-align: center;
+            z-index: 10;
+            /* عشان يكون فوق الخلفية */
+        }
+
+        .glow-text {
+            font-size: 6rem;
+            color: #fff;
+            text-shadow:
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #ff00de,
+                0 0 40px #ff00de,
+                0 0 80px #ff00de,
+                0 0 90px #ff00de;
+            animation: flicker 2s infinite alternate;
+        }
+
+        @keyframes flicker {
+
+            0%,
+            19%,
+            21%,
+            23%,
+            25%,
+            54%,
+            56%,
+            100% {
+                opacity: 1;
+            }
+
+            20%,
+            24%,
+            55% {
+                opacity: 0.5;
+            }
+        }
+
+        /* القلوب المتفجرة */
+        .particle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff00de;
+            transform: rotate(45deg);
+            opacity: 0;
+            box-shadow: 0 0 10px #ff00de;
+            z-index: 5;
+        }
+
+        .particle::before,
+        .particle::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff00de;
+        }
+
+        .particle::before {
+            left: -10px;
+        }
+
+        .particle::after {
+            top: -10px;
+        }
+
+        .sub-msg {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #ff99cc;
+            text-shadow: 0 0 5px #ff99cc;
+            opacity: 0;
+            animation: fadeIn 3s forwards;
+            animation-delay: 1s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="bg-music" src="audio/song.mp3.mpeg" loop></audio>
+
+    <div id="start-screen">
+        <h2>مستعده؟</h2>
+        <div class="buttons-container">
+            <button class="neon-btn" onclick="startShow()">أيوة </button>
+            <button class="neon-btn" id="no-btn" onmouseover="moveButton()" onclick="moveButton()">لأ</button>
+        </div>
+    </div>
+
+    <div id="final-screen">
+        <h1 class="glow-text">Nadod</h1>
+        <div class="sub-msg">Believe me, I don't know how fate brought us together, and how, out of everyone in the
+            world, I felt comfortable with you after I had refused to deal with people in general. I also don't know how
+            the coincidences and events made me not understand anything, but I am happy when I talk to you and when I
+            listen to you, and I am really interested in you. Maybe this is from God, I don't know, but all I know is
+            that I love your presence, and that you are different and your spirit is beautiful (and your eyes are
+            beautiful too).</div>
+    </div>
+
+    <script>
+        // --- كود إنشاء القلوب الهابطة في الخلفية (الجديد) ---
+        function createFallingBackgroundHeart() {
+            const heartContainer = document.createElement('div');
+            heartContainer.classList.add('falling-heart-bg');
+
+            // كود SVG لرسمة القلب المفرغ
+            heartContainer.innerHTML = `
+                <svg width="50" height="50" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            `;
+
+            // مكان عشوائي على عرض الشاشة
+            heartContainer.style.left = Math.random() * 100 + 'vw';
+
+            // حجم عشوائي (بين نصف الحجم وضعفه)
+            const scale = Math.random() * 1.5 + 0.5;
+            heartContainer.style.transform = `scale(${scale})`;
+
+            // سرعة نزول عشوائية (بين 5 و 12 ثانية)
+            const duration = Math.random() * 7 + 5;
+            heartContainer.style.animationDuration = duration + 's';
+
+            document.body.appendChild(heartContainer);
+
+            // مسح القلب بعد ما ينزل عشان الصفحة متتقلش
+            setTimeout(() => {
+                heartContainer.remove();
+            }, duration * 1000);
+        }
+
+        // تشغيل دالة إنشاء القلوب كل نصف ثانية تقريباً
+        setInterval(createFallingBackgroundHeart, 500);
+        // --------------------------------------------------
+
+
+        function startShow() {
+            const music = document.getElementById('bg-music');
+            music.play().catch(e => console.log(e));
+
+            const startScreen = document.getElementById('start-screen');
+            startScreen.style.opacity = '0';
+
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                explodeHearts();
+                const finalScreen = document.getElementById('final-screen');
+                finalScreen.style.display = 'block';
+            }, 500);
+        }
+
+        function moveButton() {
+            const btn = document.getElementById('no-btn');
+            const maxWidth = window.innerWidth - btn.offsetWidth;
+            const maxHeight = window.innerHeight - btn.offsetHeight;
+            const randomX = Math.random() * maxWidth;
+            const randomY = Math.random() * maxHeight;
+            btn.style.position = 'absolute';
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
+
+        function explodeHearts() {
+            const colors = ['#ff00de', '#ff66b2', '#ff99cc', '#ffffff'];
+            for (let i = 0; i < 100; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('particle');
+                heart.style.left = '50%';
+                heart.style.top = '50%';
+                heart.style.background = colors[Math.floor(Math.random() * colors.length)];
+                document.body.appendChild(heart);
+
+                const angle = Math.random() * Math.PI * 2;
+                const tx = Math.cos(angle) * window.innerWidth;
+                const ty = Math.sin(angle) * window.innerHeight;
+
+                const animation = heart.animate([
+                    { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 1500 + 1000,
+                    easing: 'cubic-bezier(0, .9, .57, 1)',
+                });
+                animation.onfinish = () => heart.remove();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
